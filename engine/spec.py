@@ -150,6 +150,34 @@ CONSTRAINT_RULES: list[tuple[str, str]] = [
 ]
 _UNCERTAIN_RE = re.compile(r"\b(tbd|not sure|unclear|unknown|undecided|to be decided|need to decide|open question|no idea|haven't decided)\b", re.I)
 
+# Why an open question matters, by topic. The first matching rule wins, so the more
+# specific topics (scope) come before broader ones (integration).
+QUESTION_REASONS: list[tuple[str, str]] = [
+    (r"\b(edit|change|allowed|permission|access|who can|who is allowed|approve|sign ?in|log ?in)\b",
+     "Decides who gets view and edit rights, which shapes the roles, screens and audit trail."),
+    (r"\b(belong|stay in|in scope|out of scope|this app or)\b",
+     "Changes what this app is responsible for, and so its screens and data model."),
+    (r"\b(how long|keep|retain|retention|delete|archive|years)\b",
+     "Sets the data retention policy, which legal and compliance rules depend on."),
+    (r"\b(ehr|integrat\w*|export|pdf|sync|api|import)\b",
+     "An integration is usually the biggest scope and cost driver, so it needs a decision early."),
+    (r"\b(host|aws|azure|gcp|cloud|server|on-prem\w*|deploy\w*)\b",
+     "Decides where the app runs and which security controls and costs apply."),
+    (r"\b(budget|cost|price|deadline|launch|pilot|timeline)\b",
+     "Affects what fits in the first version's budget and timeline."),
+    (r"\b(language|spanish|translat\w*|accessib\w*)\b",
+     "Affects every screen and form, so it is cheaper to decide before design starts."),
+]
+DEFAULT_REASON = "The notes raise this but don't settle it, so the spec leaves it open."
+
+
+def why_it_matters(question: str) -> str:
+    for pattern, reason in QUESTION_REASONS:
+        if re.search(pattern, question, re.I):
+            return reason
+    return DEFAULT_REASON
+
+
 GAP_CHECKS = [
     (
         lambda text: not re.search(r"\b(log ?in|sign ?in|sso|password|role|permission|access)\b", text, re.I),
@@ -207,7 +235,7 @@ def offline_spec(title: str, chunks: list[dict], answered: dict[str, str]) -> Sp
                 qid = question_id(q)
                 if qid not in answered and qid not in questions:
                     questions[qid] = OpenQuestion(
-                        id=qid, question=q, why_it_matters="The notes leave this undecided.", sources=[_ref(chunk)]
+                        id=qid, question=q, why_it_matters=why_it_matters(q), sources=[_ref(chunk)]
                     )
                 continue
 

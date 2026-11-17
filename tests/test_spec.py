@@ -113,3 +113,14 @@ def test_run_needs_artifacts(engine):
     p = engine.create_project("Empty", "t")
     with pytest.raises(Conflict):
         engine.start_run(p["id"], "t")
+
+
+def test_open_questions_explain_why_they_matter():
+    from engine.spec import DEFAULT_REASON, why_it_matters
+
+    assert "edit rights" in why_it_matters("Who is allowed to edit a patient's intake after they submit it?")
+    assert "where the app runs" in why_it_matters("Host on the clinic's existing AWS account?")
+    assert "retention" in why_it_matters("How long do we keep the intake records?")
+    assert "responsible for" in why_it_matters("Decide whether vitals belong in this app or stay in the EHR.")
+    assert "integration" in why_it_matters("Decide whether we push intake answers into the EHR or just export a PDF.")
+    assert why_it_matters("What color should the logo be?") == DEFAULT_REASON
