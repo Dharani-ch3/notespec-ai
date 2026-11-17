@@ -12,12 +12,8 @@ import os
 from collections.abc import Callable, Sequence
 from typing import Protocol
 
-import httpx
-
 from .config import Settings
 from .index import Embedder, HashingEmbedder
-
-TIMEOUT = httpx.Timeout(90.0, connect=10.0)
 
 
 class ProviderError(RuntimeError):
@@ -32,8 +28,10 @@ class LLMProvider(Protocol):
 
 
 def _post(url: str, headers: dict, payload: dict) -> dict:
+    import httpx  # imported lazily so the offline engine also runs in the browser (Pyodide)
+
     try:
-        resp = httpx.post(url, headers=headers, json=payload, timeout=TIMEOUT)
+        resp = httpx.post(url, headers=headers, json=payload, timeout=httpx.Timeout(90.0, connect=10.0))
     except httpx.HTTPError as exc:
         raise ProviderError(f"Could not reach {url}: {exc}") from exc
     if resp.status_code >= 400:

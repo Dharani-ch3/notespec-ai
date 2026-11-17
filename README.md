@@ -4,7 +4,10 @@
 
 Meeting notes, emails, interview write-ups and whiteboard photos hold most of what a team knows about the app it wants to build, but nobody turns them into a clear spec. The Knowledge AI Engine ingests those artifacts, retrieves what matters with hybrid search, and drafts a structured spec covering users, features, data entities, screens and constraints. **Every item links back to the passage it came from.** When the notes don't say something, the engine asks an open question instead of guessing, and a human approves the spec before anyone builds from it.
 
+**[▶ Try the live demo](https://dharani-ch3.github.io/knowledge-ai-engine/)**: the real Python engine running in your browser on WebAssembly ([Pyodide](https://pyodide.org)). No server, no sign-up, and your notes never leave your device. Click *Load sample clinic notes*, then *Generate spec*.
+
 [![CI](https://github.com/Dharani-ch3/knowledge-ai-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/Dharani-ch3/knowledge-ai-engine/actions/workflows/ci.yml)
+[![Live demo](https://github.com/Dharani-ch3/knowledge-ai-engine/actions/workflows/pages.yml/badge.svg)](https://dharani-ch3.github.io/knowledge-ai-engine/)
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Dharani-ch3/knowledge-ai-engine)
 
 ![Spec with open questions](docs/screenshot-questions.png)
@@ -63,6 +66,12 @@ flowchart LR
 3. **Ask, don't guess.** Missing information (who can access what, where the app runs) becomes a question even when the notes never mention it.
 4. **A human signs off.** Specs can't be approved while questions are open, and approval is role-gated.
 5. **Runs anywhere.** The default `offline` provider is a deterministic, rule-based extractor with local hashing embeddings: no API keys, no cost, no data leaving the machine. The public demo runs this way.
+
+## How the live demo works
+
+GitHub Pages only serves static files, so the demo brings Python to the browser instead of a server. `scripts/build_site.py` bundles the engine's modules and the sample notes, and the page loads [Pyodide](https://pyodide.org) (CPython compiled to WebAssembly) plus `pydantic` and `sqlite3`. The web console normally calls the REST API; in the demo it calls `engine/bridge.py`, which exposes the same routes as a function. The ingest, retrieval, extraction, grounding and approval code that runs is the same code the server runs. The [`pages.yml`](.github/workflows/pages.yml) workflow runs the tests, rebuilds the demo and republishes it on every push to `main`.
+
+The demo uses the offline extractor. Cloud and local LLM providers need the server (`uvicorn` or Docker below), since API keys don't belong in a browser.
 
 ## Quick start
 
@@ -140,7 +149,7 @@ pip install pytest ruff
 pytest -q && ruff check .
 ```
 
-The 22 tests cover chunking, PDF/DOCX parsing, hybrid ranking, offline extraction, the LLM path (with a fake model that returns invalid JSON first, to exercise the repair loop and citation grounding), provider fallback, the full API flow from upload to approval, role checks, separation of duties, and the MCP tools. CI runs them on Python 3.11 to 3.13 and smoke-tests the Docker image.
+The 26 tests cover chunking, PDF/DOCX parsing, hybrid ranking, offline extraction, the LLM path (with a fake model that returns invalid JSON first, to exercise the repair loop and citation grounding), provider fallback, the full API flow from upload to approval, role checks, separation of duties, the MCP tools, and the in-browser bridge and site build. CI runs them on Python 3.11 to 3.13 and smoke-tests the Docker image.
 
 ## Project layout
 
@@ -155,7 +164,9 @@ engine/
   store.py       SQLite storage and audit log
   mcp_server.py  MCP tools
   cli.py         Command line
+  bridge.py      The API's routes as a function call, for the in-browser demo
   static/        Web console (plain HTML/CSS/JS, no build step)
+scripts/build_site.py     Builds the GitHub Pages demo
 examples/clinic_intake/   Sample notes from a community clinic project
 tests/
 ```

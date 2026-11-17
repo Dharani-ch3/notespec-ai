@@ -22,7 +22,27 @@ function storedKey() {
   try { return localStorage.getItem("kae-key") || ""; } catch { return ""; }
 }
 
+async function fileToB64(file) {
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+
+// Static demo (GitHub Pages): requests go to the Python engine running in the browser via Pyodide.
+async function staticApi(path, opts) {
+  await window.kaeReady;
+  let body = opts.json;
+  if (opts.body instanceof FormData) {
+    body = { files: await Promise.all(opts.body.getAll("files").map(async (f) => ({ name: f.name, b64: await fileToB64(f) }))) };
+  }
+  const { status, data } = window.kaeBridge(opts.method || "GET", path, body);
+  if (status >= 400) throw new Error(typeof data.detail === "string" ? data.detail : JSON.stringify(data.detail));
+  return data;
+}
+
 async function api(path, opts = {}) {
+  if (window.KAE_STATIC) return staticApi(path, opts);
   const headers = { ...(opts.headers || {}) };
   const key = $("apiKey").value || storedKey();
   if (key) headers["X-API-Key"] = key;
@@ -168,7 +188,10 @@ function summarize(d) {
 }
 
 function citeLabel(s) {
-  if (s.chunk_id.startsWith("answers#")) return "your answer";
+  if (s.chunk_id.startsWith("answers#")) {
+    const i = Object.keys((state.run && state.run.answers) || {}).indexOf(s.chunk_id.slice(8));
+    return i >= 0 ? `answer ${i + 1}` : "answer";
+  }
   if (s.chunk_id.startsWith("feedback#")) return "reviewer note";
   const name = (s.artifact || s.chunk_id).replace(/^\d+_/, "").replace(/\.(md|txt|pdf|docx|csv|json)$/, "");
   const part = Number(s.chunk_id.split("#")[1]);
@@ -223,7 +246,7 @@ function renderRun(run) {
     $("approvedBox").replaceChildren(
       el("h3", {}, "Approved"),
       el("p", {}, `Signed off by ${run.approved_by}. Every item below links to its source.`),
-      el("p", {}, el("a", { href: `/api/runs/${run.id}/export.md`, target: "_blank", style: "color:#fff" }, "Download spec as Markdown →"))
+      el("p", {}, el("a", { href: `/api/runs/${run.id}/export.md`, target: "_blank", style: "color:#fff", onclick: (e) => downloadSpec(e, run) }, "Download spec as Markdown →"))
     );
   }
 
@@ -260,13 +283,23 @@ function renderRun(run) {
   );
 }
 
+async function downloadSpec(e, run) {
+  if (!window.KAE_STATIC) return; // the server serves the file directly
+  e.preventDefault();
+  const md = await api(`/api/runs/${run.id}/export.md`);
+  const a = el("a", { href: URL.createObjectURL(new Blob([md], { type: "text/markdown" })), download: "spec.md" });
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
 // ---------------- wire up ----------------
 
 async function init() {
   try {
     const h = await api("/api/health");
     state.auth = h.auth;
-    $("health").textContent = `${h.provider} · ${h.embedder}`;
+    $("health").textContent = window.KAE_STATIC ? "runs in your browser" : `${h.provider} · ${h.embedder}`;
+    $("docsLink").hidden = !!window.KAE_STATIC;
     $("apiKey").hidden = !h.auth;
     $("apiKey").value = storedKey();
     const providers = await api("/api/providers").catch(() => []);

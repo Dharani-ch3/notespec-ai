@@ -1,0 +1,32 @@
+name: Publish live demo
+
+# Builds the static demo (the real engine running in the browser via Pyodide) and
+# publishes it to the gh-pages branch, served at https://dharani-ch3.github.io/knowledge-ai-engine/
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt pytest && pytest -q
+      - run: python scripts/build_site.py
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          publish_branch: gh-pages
+          commit_message: "Publish live demo from ${{ github.sha }}"
