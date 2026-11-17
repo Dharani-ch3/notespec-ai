@@ -62,7 +62,7 @@ Editor = Annotated[Caller, Depends(require("editor"))]
 Approver = Annotated[Caller, Depends(require("approver"))]
 
 app = FastAPI(
-    title="Knowledge AI Engine",
+    title="NoteSpec AI",
     version=__version__,
     description="Turn messy notes and documents into a reviewed, cited app spec.",
 )

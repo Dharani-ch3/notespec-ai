@@ -2,7 +2,7 @@
 # Runs the offline extractor, so no API keys or model costs are needed.
 services:
   - type: web
-    name: knowledge-ai-engine
+    name: notespec-ai
     runtime: docker
     plan: free
     healthCheckPath: /api/health

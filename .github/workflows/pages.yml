@@ -1,7 +1,7 @@
 name: Publish live demo
 
 # Builds the static demo (the real engine running in the browser via Pyodide) and
-# publishes it to the gh-pages branch, served at https://dharani-ch3.github.io/knowledge-ai-engine/
+# publishes it to the gh-pages branch, served at https://dharani-ch3.github.io/notespec-ai/
 on:
   push:
     branches: [main]

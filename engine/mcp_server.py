@@ -2,8 +2,8 @@
 
 Run over stdio:   python -m engine.mcp_server
 Claude Desktop / Cursor config:
-    {"mcpServers": {"knowledge-engine": {"command": "python", "args": ["-m", "engine.mcp_server"],
-                                          "cwd": "/path/to/knowledge-ai-engine"}}}
+    {"mcpServers": {"notespec": {"command": "python", "args": ["-m", "engine.mcp_server"],
+                                          "cwd": "/path/to/notespec-ai"}}}
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ from .core import Engine
 
 ACTOR = "mcp-client"
 mcp = MCPServer(
-    name="knowledge-ai-engine",
+    name="notespec-ai",
     instructions=(
         "Turn project notes into a cited app spec. Typical flow: create_project, add_note (one per document), "
         "generate_spec, then answer_questions until no open questions remain. A human approves the spec in the web console."

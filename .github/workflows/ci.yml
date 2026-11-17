@@ -26,9 +26,9 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -t knowledge-ai-engine .
+      - run: docker build -t notespec-ai .
       - name: Smoke test the image
         run: |
-          docker run -d -p 8000:8000 --name kae knowledge-ai-engine
+          docker run -d -p 8000:8000 --name notespec notespec-ai
           for i in $(seq 1 20); do curl -fs localhost:8000/api/health && exit 0; sleep 1; done
-          docker logs kae; exit 1
+          docker logs notespec; exit 1

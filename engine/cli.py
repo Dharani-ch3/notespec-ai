@@ -12,7 +12,7 @@ from .ingest import SUPPORTED_EXTS, IngestError
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="kae", description="Knowledge AI Engine command line")
+    parser = argparse.ArgumentParser(prog="notespec", description="NoteSpec AI command line")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     spec = sub.add_parser("spec", help="Ingest a folder of notes and print a draft spec as Markdown")

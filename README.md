@@ -1,14 +1,14 @@
-# Knowledge AI Engine
+# NoteSpec AI
 
 **Messy project notes in. A cited, human-approved app spec out.**
 
-Meeting notes, emails, interview write-ups and whiteboard photos hold most of what a team knows about the app it wants to build, but nobody turns them into a clear spec. The Knowledge AI Engine ingests those artifacts, retrieves what matters with hybrid search, and drafts a structured spec covering users, features, data entities, screens and constraints. **Every item links back to the passage it came from.** When the notes don't say something, the engine asks an open question instead of guessing, and a human approves the spec before anyone builds from it.
+Meeting notes, emails, interview write-ups and whiteboard photos hold most of what a team knows about the app it wants to build, but nobody turns them into a clear spec. NoteSpec AI ingests those artifacts, retrieves what matters with hybrid search, and drafts a structured spec covering users, features, data entities, screens and constraints. **Every item links back to the passage it came from.** When the notes don't say something, the engine asks an open question instead of guessing, and a human approves the spec before anyone builds from it.
 
-**[▶ Try the live demo](https://dharani-ch3.github.io/knowledge-ai-engine/)**: the real Python engine running in your browser on WebAssembly ([Pyodide](https://pyodide.org)). No server, no sign-up, and your notes never leave your device. Click *Load sample clinic notes*, then *Generate spec*.
+**[▶ Try the live demo](https://dharani-ch3.github.io/notespec-ai/)**: the real Python engine running in your browser on WebAssembly ([Pyodide](https://pyodide.org)). No server, no sign-up, and your notes never leave your device. Click *Load sample clinic notes*, then *Generate spec*.
 
-[![CI](https://github.com/Dharani-ch3/knowledge-ai-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/Dharani-ch3/knowledge-ai-engine/actions/workflows/ci.yml)
-[![Live demo](https://github.com/Dharani-ch3/knowledge-ai-engine/actions/workflows/pages.yml/badge.svg)](https://dharani-ch3.github.io/knowledge-ai-engine/)
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Dharani-ch3/knowledge-ai-engine)
+[![CI](https://github.com/Dharani-ch3/notespec-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/Dharani-ch3/notespec-ai/actions/workflows/ci.yml)
+[![Live demo](https://github.com/Dharani-ch3/notespec-ai/actions/workflows/pages.yml/badge.svg)](https://dharani-ch3.github.io/notespec-ai/)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Dharani-ch3/notespec-ai)
 
 ![Spec with open questions](docs/screenshot-questions.png)
 
@@ -76,8 +76,8 @@ The demo uses the offline extractor. Cloud and local LLM providers need the serv
 ## Quick start
 
 ```bash
-git clone https://github.com/Dharani-ch3/knowledge-ai-engine
-cd knowledge-ai-engine
+git clone https://github.com/Dharani-ch3/notespec-ai
+cd notespec-ai
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn engine.api:app --reload
@@ -112,10 +112,10 @@ python -m engine.cli search examples/clinic_intake "works without internet"
 ```json
 {
   "mcpServers": {
-    "knowledge-engine": {
+    "notespec": {
       "command": "python",
       "args": ["-m", "engine.mcp_server"],
-      "cwd": "/path/to/knowledge-ai-engine"
+      "cwd": "/path/to/notespec-ai"
     }
   }
 }

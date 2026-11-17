@@ -1,5 +1,5 @@
 [project]
-name = "knowledge-ai-engine"
+name = "notespec-ai"
 version = "0.1.0"
 description = "Turn messy notes and documents into a reviewed, cited app spec."
 readme = "README.md"
@@ -20,8 +20,8 @@ dependencies = [
 dev = ["pytest>=8", "ruff>=0.5"]
 
 [project.scripts]
-kae = "engine.cli:main"
-kae-mcp = "engine.mcp_server:main"
+notespec = "engine.cli:main"
+notespec-mcp = "engine.mcp_server:main"
 
 [build-system]
 requires = ["setuptools>=68"]

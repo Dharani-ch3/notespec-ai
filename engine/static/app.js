@@ -1,4 +1,4 @@
-// Knowledge AI Engine web console. Plain JS, no build step.
+// NoteSpec AI web console. Plain JS, no build step.
 // All user and model text is inserted with textContent, never innerHTML.
 
 const $ = (id) => document.getElementById(id);
@@ -19,7 +19,7 @@ function el(tag, attrs = {}, ...children) {
 }
 
 function storedKey() {
-  try { return localStorage.getItem("kae-key") || ""; } catch { return ""; }
+  try { return localStorage.getItem("notespec-key") || ""; } catch { return ""; }
 }
 
 async function fileToB64(file) {
@@ -315,7 +315,7 @@ async function init() {
 }
 
 $("apiKey").addEventListener("change", () => {
-  try { localStorage.setItem("kae-key", $("apiKey").value); } catch {}
+  try { localStorage.setItem("notespec-key", $("apiKey").value); } catch {}
   init();
 });
 $("projectSelect").addEventListener("change", (e) => busy(null, () => selectProject(e.target.value)));
