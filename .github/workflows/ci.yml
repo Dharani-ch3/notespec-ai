@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: pip install -r requirements.txt pytest ruff
+      - run: ruff check .
+      - run: pytest -q
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t knowledge-ai-engine .
+      - name: Smoke test the image
+        run: |
+          docker run -d -p 8000:8000 --name kae knowledge-ai-engine
+          for i in $(seq 1 20); do curl -fs localhost:8000/api/health && exit 0; sleep 1; done
+          docker logs kae; exit 1

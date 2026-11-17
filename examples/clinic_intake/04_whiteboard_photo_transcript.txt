@@ -1,0 +1,17 @@
+WHITEBOARD (transcribed from photo, sprint planning)
+
+Flow: patient arrives -> tablet check-in -> queue -> nurse triage -> doctor -> checkout
+
+Screens:
+  check-in page (big buttons, EN/ES toggle)
+  front desk queue view
+  nurse patient summary screen
+  manager reports dashboard
+
+Staff log in with the clinic Google accounts (SSO). Patients never log in.
+
+Role-based access: front desk sees names + queue only, nurses and doctors see the full intake.
+
+Audit log of who viewed or changed each record (HIPAA).
+
+Host on the clinic's existing AWS account?

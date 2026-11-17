@@ -1,0 +1,17 @@
+From: Clinic Manager
+To: Project team
+Subject: Re: intake app follow-ups
+
+Thanks all. A few more things after talking with the board:
+
+We need to track every appointment with its status (scheduled, checked in, seen, no-show) so the weekly report is accurate.
+
+Appointment fields: patient, provider, date, time, visit type, status.
+
+Interpreters should be able to see which patients asked for an interpreter, so they can plan their day.
+
+Budget is tight: we have about $15k for the first version and want a pilot running by March.
+
+Who is allowed to edit a patient's intake after they submit it? I don't want everyone changing medical history.
+
+How long do we keep the intake records? Our policy says 7 years but I need to double check with compliance.

@@ -1,0 +1,13 @@
+# One-click free demo on Render: New + > Blueprint > pick this repo.
+# Runs the offline extractor, so no API keys or model costs are needed.
+services:
+  - type: web
+    name: knowledge-ai-engine
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: ENGINE_PROVIDER
+        value: offline
+      - key: ENGINE_DB_PATH
+        value: /tmp/engine.db
