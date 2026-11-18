@@ -35,7 +35,7 @@ flowchart LR
     subgraph Entry points
         UI[Web console]
         API[REST API + OpenAPI docs]
-        MCP[MCP server<br/>Claude, Cursor]
+        MCP[MCP server<br/>Cursor, IDEs]
         CLI[CLI]
     end
     subgraph Engine core
@@ -51,7 +51,7 @@ flowchart LR
     subgraph Model gateway
         OFF[Offline extractor]
         OAI[OpenAI]
-        ANT[Anthropic Claude]
+        ANT[Anthropic]
         OLL[Ollama<br/>Gemma, Llama: local / air-gapped]
     end
     UI & API & MCP & CLI --> I
@@ -61,7 +61,7 @@ flowchart LR
 
 **Design rules**
 
-1. **Models are swappable.** All model calls go through one gateway (`engine/gateway.py`). Switching from OpenAI to Claude to a local Gemma model is an environment variable, not a code change. New providers register in one dictionary.
+1. **Models are swappable.** All model calls go through one gateway (`engine/gateway.py`). Switching from OpenAI to Anthropic to a local Gemma model is an environment variable, not a code change. New providers register in one dictionary.
 2. **No claim without a source.** The schema requires sources, the grounding step enforces them, and the UI shows them.
 3. **Ask, don't guess.** Missing information (who can access what, where the app runs) becomes a question even when the notes never mention it.
 4. **A human signs off.** Specs can't be approved while questions are open, and approval is role-gated.
@@ -88,7 +88,7 @@ Open http://localhost:8000, click **Load sample clinic notes**, then **Generate 
 **Use a real model:**
 
 ```bash
-export ENGINE_PROVIDER=anthropic ANTHROPIC_API_KEY=sk-...     # or openai / OPENAI_API_KEY
+export ENGINE_PROVIDER=anthropic ANTHROPIC_API_KEY=sk-... ANTHROPIC_MODEL=<model id>   # or openai / OPENAI_API_KEY
 export ENGINE_EMBEDDER=openai OPENAI_API_KEY=sk-...           # optional: better semantic search
 ```
 
@@ -107,7 +107,7 @@ python -m engine.cli spec examples/clinic_intake          # prints the spec as M
 python -m engine.cli search examples/clinic_intake "works without internet"
 ```
 
-**As an MCP tool** (Claude Desktop, Cursor):
+**As an MCP tool** (Cursor or any MCP client):
 
 ```json
 {

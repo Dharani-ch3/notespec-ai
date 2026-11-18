@@ -1,7 +1,7 @@
-"""MCP server: lets Claude, Cursor or any MCP client use the engine as a tool.
+"""MCP server: lets Cursor or any MCP client use the engine as a tool.
 
 Run over stdio:   python -m engine.mcp_server
-Claude Desktop / Cursor config:
+MCP client config (e.g. Cursor):
     {"mcpServers": {"notespec": {"command": "python", "args": ["-m", "engine.mcp_server"],
                                           "cwd": "/path/to/notespec-ai"}}}
 """

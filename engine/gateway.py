@@ -1,7 +1,7 @@
 """Model gateway: one interface for cloud and local models.
 
 Engine code asks the gateway for "JSON from this prompt" and never imports a vendor SDK,
-so switching OpenAI -> Claude -> a local Gemma model on Ollama is a config change.
+so switching OpenAI -> Anthropic -> a local Gemma model on Ollama is a config change.
 The `offline` provider uses no model at all (rule-based extraction), which keeps the
 public demo free and lets the engine run fully air-gapped.
 """
@@ -69,6 +69,8 @@ class AnthropicProvider:
         self.key = os.environ.get("ANTHROPIC_API_KEY", "")
 
     def complete_json(self, system: str, user: str) -> str:
+        if not self.model:
+            raise ProviderError("Set ANTHROPIC_MODEL to the Anthropic model id you want to use")
         data = _post(
             "https://api.anthropic.com/v1/messages",
             {"x-api-key": self.key, "anthropic-version": "2023-06-01"},
@@ -121,7 +123,7 @@ def is_configured(name: str, settings: Settings) -> bool:
     if name == "openai":
         return bool(os.environ.get("OPENAI_API_KEY"))
     if name == "anthropic":
-        return bool(os.environ.get("ANTHROPIC_API_KEY"))
+        return bool(os.environ.get("ANTHROPIC_API_KEY") and settings.anthropic_model)
     if name == "ollama":
         return bool(os.environ.get("OLLAMA_URL"))
     return name in PROVIDERS
@@ -141,7 +143,7 @@ def list_providers(settings: Settings) -> list[dict]:
     models = {
         "offline": "rule-based extractor",
         "openai": settings.openai_model,
-        "anthropic": settings.anthropic_model,
+        "anthropic": settings.anthropic_model or "set ANTHROPIC_MODEL",
         "ollama": settings.ollama_model,
     }
     names = ["offline", *PROVIDERS]

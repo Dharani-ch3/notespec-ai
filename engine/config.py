@@ -28,7 +28,7 @@ class Settings:
     embedder: str = "hashing"  # hashing | openai | ollama
     openai_model: str = "gpt-4o-mini"
     openai_embed_model: str = "text-embedding-3-small"
-    anthropic_model: str = "claude-sonnet-5-5"
+    anthropic_model: str = ""  # set ANTHROPIC_MODEL to an Anthropic model id
     ollama_url: str = "http://localhost:11434"
     ollama_model: str = "gemma3"
     ollama_embed_model: str = "nomic-embed-text"
@@ -53,7 +53,7 @@ def get_settings() -> Settings:
         embedder=env("ENGINE_EMBEDDER", "hashing").lower(),
         openai_model=env("OPENAI_MODEL", "gpt-4o-mini"),
         openai_embed_model=env("OPENAI_EMBED_MODEL", "text-embedding-3-small"),
-        anthropic_model=env("ANTHROPIC_MODEL", "claude-sonnet-5-5"),
+        anthropic_model=env("ANTHROPIC_MODEL", ""),
         ollama_url=env("OLLAMA_URL", "http://localhost:11434").rstrip("/"),
         ollama_model=env("OLLAMA_MODEL", "gemma3"),
         ollama_embed_model=env("OLLAMA_EMBED_MODEL", "nomic-embed-text"),
