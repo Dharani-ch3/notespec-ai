@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NoteSpec AI</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23111'/><path d='M9 23V9h3.2l7 9.2V9H22v14h-3.1l-7.1-9.3V23z' fill='white'/></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="logo">N</span>
+    <div>
+      <h1>NoteSpec AI</h1>
+      <p>Messy notes in. A cited, human-approved app spec out.</p>
+    </div>
+  </div>
+  <div class="top-right">
+    <span id="health" class="pill">connecting…</span>
+    <input id="apiKey" class="key" type="password" placeholder="API key" hidden />
+    <a id="docsLink" class="ghost" href="/docs" target="_blank" rel="noopener">API docs</a>
+    <a class="ghost" href="https://github.com/Dharani-ch3/notespec-ai" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</header>
+
+<main class="layout">
+  <!-- ============ SOURCES ============ -->
+  <aside class="panel sources">
+    <section>
+      <h2>Project</h2>
+      <div class="row">
+        <select id="projectSelect" aria-label="Project"></select>
+        <button id="newProjectBtn" class="btn small">New</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Artifacts <span id="artCount" class="count"></span></h2>
+      <label id="drop" class="drop">
+        <input id="fileInput" type="file" multiple accept=".txt,.md,.pdf,.docx,.csv,.json" hidden />
+        <strong>Drop notes here</strong>
+        <span>or click to upload · txt, md, pdf, docx</span>
+      </label>
+      <button id="sampleBtn" class="btn outline wide">Load sample clinic notes</button>
+      <ul id="artifactList" class="list"></ul>
+    </section>
+
+    <section>
+      <h2>Search the notes</h2>
+      <form id="searchForm" class="row">
+        <input id="searchInput" placeholder="e.g. works without internet" aria-label="Search" />
+        <button class="btn small">Go</button>
+      </form>
+      <p class="hint">Hybrid search: BM25 keywords + vectors, merged with reciprocal rank fusion.</p>
+      <ol id="searchResults" class="results"></ol>
+    </section>
+  </aside>
+
+  <!-- ============ RUN ============ -->
+  <section class="panel run">
+    <div class="run-head">
+      <div>
+        <h2>Spec</h2>
+        <p id="runMeta" class="muted">Add notes, then generate a spec.</p>
+      </div>
+      <div class="row">
+        <select id="providerSelect" aria-label="Model provider"></select>
+        <button id="generateBtn" class="btn">Generate spec</button>
+      </div>
+    </div>
+
+    <ol id="stepper" class="stepper">
+      <li data-step="ingest">Ingest</li>
+      <li data-step="context">Context</li>
+      <li data-step="spec">Spec</li>
+      <li data-step="questions">Questions</li>
+      <li data-step="review">Review</li>
+      <li data-step="approved">Approved</li>
+    </ol>
+
+    <div id="warnings"></div>
+
+    <div id="empty" class="empty">
+      <p><strong>Try it in 3 clicks:</strong> Load sample clinic notes → Generate spec → answer the open questions.</p>
+      <p class="muted">Every item in the spec links back to the passage it came from. Anything the notes don't say becomes a question, not a guess.</p>
+    </div>
+
+    <div id="questionsBox" class="card questions" hidden>
+      <h3>Open questions <span class="count" id="qCount"></span></h3>
+      <p class="muted">The engine won't guess these. Answer them and the spec is regenerated with your answers as a new source.</p>
+      <form id="answersForm"></form>
+    </div>
+
+    <div id="reviewBox" class="card review" hidden>
+      <h3>Human approval</h3>
+      <p class="muted">No open questions left. An approver signs off before this spec is used.</p>
+      <textarea id="reviewNote" rows="2" placeholder="Note (required when requesting changes)"></textarea>
+      <div class="row">
+        <button id="approveBtn" class="btn">Approve spec</button>
+        <button id="changesBtn" class="btn outline">Request changes</button>
+      </div>
+    </div>
+
+    <div id="approvedBox" class="card approved" hidden></div>
+
+    <div id="spec"></div>
+
+    <details id="logBox" class="card log" hidden>
+      <summary>Audit log</summary>
+      <ol id="log"></ol>
+    </details>
+  </section>
+</main>
+
+<dialog id="sourceDialog">
+  <form method="dialog">
+    <header><span id="srcTitle"></span><button aria-label="Close">×</button></header>
+    <pre id="srcText"></pre>
+  </form>
+</dialog>
+
+<script src="./boot.js"></script>
+<script src="./app.js"></script>
+
+<div id="boot" class="boot" role="status" aria-live="polite">
+  <div>
+    <strong>Starting the engine in your browser</strong>
+    <p id="bootStatus">Loading…</p>
+    <p class="muted">This live demo runs the real Python engine on WebAssembly. Nothing is uploaded; data resets when you reload.</p>
+  </div>
+</div>
+</body>
+</html>
